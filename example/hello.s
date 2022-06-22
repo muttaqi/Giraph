@@ -9,17 +9,55 @@ section .text
     global main
 
 main:
-    sub   esp, 1000
-    mov   qword [esp+0], 1
-    push  qword [esp+0]
-    push  ouf
+    sub   rsp, 1000
+    mov   qword [rsp+0], 1
+    mov   rax, qword [rsp+0]
+    mov   qword [rsp+8], rax
+    add   qword [rsp+8], 1
+    mov   rax, qword [rsp+8]
+    mov   qword [rsp+4], rax
+    mov   rax, qword [rsp+4]
+    mov   qword [rsp+8], rax
+    add   qword [rsp+8], 1
+    mov   rax, qword [rsp+8]
+    mov   qword [rsp+4], rax
+    mov  rax, qword [rsp+0]
+    mov  rdi, ouf
+    mov  rsi, rax
+    xor  rax, rax
     call  printf
-    add   esp, 8
-    push  qword [esp+0]
-    push  ouf
+    mov  rax, qword [rsp+4]
+    mov  rdi, ouf
+    mov  rsi, rax
+    xor  rax, rax
     call  printf
-    add   esp, 8
-    add   esp, 1000
+    lea  rax, [rsp+0]
+    mov  rdi, inf
+    mov  rsi, rax
+    xor  rax, rax
+    call  scanf
+    lea  rax, [rsp+4]
+    mov  rdi, inf
+    mov  rsi, rax
+    xor  rax, rax
+    call  scanf
+    mov   rax, qword [rsp+0]
+    mov   qword [rsp+8], rax
+    add   qword [rsp+8], 10
+    mov  rax, qword [rsp+8]
+    mov  rdi, ouf
+    mov  rsi, rax
+    xor  rax, rax
+    call  printf
+    mov   rax, qword [rsp+4]
+    mov   qword [rsp+8], rax
+    add   qword [rsp+8], 10
+    mov  rax, qword [rsp+8]
+    mov  rdi, ouf
+    mov  rsi, rax
+    xor  rax, rax
+    call  printf
+    add   rsp, 1000
 
 exit:
 

@@ -1,4 +1,4 @@
-# Grammar
+# Proposed Grammar
 
 `NODE`:
 ```
@@ -25,7 +25,8 @@ NAME
 `CONDITIONAL_EDGES`:
 ```
 =COND=> NODE
-	CONDITIONAL_EDGES
+	CONDITIONAL_EDGES |
+-> PRIMITIVE
 ```
 
 `DEFINITION`:

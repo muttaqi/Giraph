@@ -182,7 +182,7 @@ let compile file =
     close_stream stm;
     close_generator g;
     let _ = Sys.command ("nasm -f elf64 " ^ g.file) in
-    let _ = Sys.command ("gcc -Wl,--image-base -Wl,0x10000000 -o " ^ out ^ " " ^ out ^ ".o") in
+    let _ = Sys.command ("gcc -no-pie -o " ^ out ^ " " ^ out ^ ".o") in
     ()
   with
   | Syntax_error e ->

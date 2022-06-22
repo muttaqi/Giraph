@@ -25,9 +25,9 @@ let var_addr s g v =
   if String.length v > 6 && String.sub v 0 6 = "__temp"
   then (
     let i = String.sub v 6 (String.length v - 6) in
-    "[esp+" ^ i ^ "]")
+    "[rsp+" ^ i ^ "]")
   else (
-    try "[esp+" ^ string_of_int (Hashtbl.find g.vars v) ^ "]" with
+    try "[rsp+" ^ string_of_int (Hashtbl.find g.vars v) ^ "]" with
     | Not_found -> syntax_error s ("identifier " ^ v ^ " not defined"))
 ;;
 
@@ -65,12 +65,12 @@ section .text
     global main
 
 main:
-    sub   esp, 1000"
+    sub   rsp, 1000"
 
 let generate_end _ g =
   gen
     g
-    "    add   esp, 1000\n\n\
+    "    add   rsp, 1000\n\n\
      exit:\n\n\
     \    mov  rax, 1 ; sys_exit\n\n\
     \    mov  ebx, 0\n\n\
@@ -81,10 +81,10 @@ let generate_read s g id =
   match id with
   | Identifier i ->
     op2 g "lea" "rax" (var_addr s g i);
-    push g "rax";
-    push g "inf";
-    op g "call" "scanf";
-    op2 g "add " "esp" "8"
+    op2 g "mov" "rdi" "inf";
+    op2 g "mov" "rsi" "rax";
+    op2 g "xor" "rax" "rax";
+    op g "call" "scanf"
   | _ -> syntax_error s "generate read called with invalid argument"
 ;;
 
@@ -93,10 +93,11 @@ let rec generate_reads s g = List.iter (generate_read s g)
 let generate_write s g id =
   match id with
   | Identifier i ->
-    push g (var s g i);
-    push g "ouf";
-    op g "call" "printf";
-    op2 g "add " "esp" "8"
+    op2 g "mov" "rax" (var s g i);
+    op2 g "mov" "rdi" "ouf";
+    op2 g "mov" "rsi" "rax";
+    op2 g "xor" "rax" "rax";
+    op g "call" "printf"
   | _ -> syntax_error s "generate write called with invalid argument"
 ;;
 
