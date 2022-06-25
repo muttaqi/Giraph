@@ -11,7 +11,7 @@ let addop s g d l r =
   | Literal l1, Identifier i2 -> generate_add s g d r l
   | _ -> syntax_error s "expected literal or identifier for add operation"
 ;;
-
+ 
 let subop s g d l r =
   match l, r with
   | Literal l1, Literal l2 -> Literal (l1 - l2)
@@ -117,6 +117,7 @@ let write s g =
   else syntax_error s "write statement expected"
 ;;
 
+(*
 let assignment s g =
   let id = match_next s in
   match id with
@@ -136,7 +137,35 @@ let assignment s g =
     else syntax_error s "assign symbol expected"
   | _ -> syntax_error s "identifier expected"
 ;;
+*)
 
+let conditional_edge s g =
+  let edge = match_next s in
+  match edge with
+  | Equal ->
+  | Dash ->
+  | _ -> syntax_error s "conditional edge expected a dash or equal sign"
+
+let rec conditional_edges s g = if conditional_edge s g then conditional_edges s g else ()
+
+let field s g =
+  let id = match_next s in
+  match id with
+  | Identifier i ->
+    if match_token s Colon
+    then (
+      let id2 = match_next s in
+      match id2 with
+      | Literal l ->
+        let _ = generate_assign s g id id2
+        true
+    )
+    else syntax_error s "field expected a colon after field name"
+  | RightBrace -> false
+  | _ -> syntax_error s "fields expected an identifier or right brace"
+;;
+
+(*
 let statement s g =
   let t = next_token s in
   if match t with
@@ -150,10 +179,30 @@ let statement s g =
     else syntax_error s "statement must end with semicolon"
   else false
 ;;
+*)
 
 let rec statements s g = if statement s g then statements s g else ()
-let rec statements s g = if statement s g then statements s g else ()
 
+let rec fields s g = if field s g then fields s g else ()
+
+let main_state s g =
+  if match_token s LeftParen
+  then (
+    if match_token s RightParen
+    then (
+      if match_token s LeftBrace
+      then (
+        fields s g
+        conditional_edges s g
+      )
+      else syntax_error s "state expected left brace"
+    )
+    else syntax_error s "state arguments aren't supported yet"
+  )
+  else syntax_error s "main state expected a left parenthesis"
+;;
+
+(*
 let program s g =
   if match_token s Begin
   then (
@@ -165,6 +214,19 @@ let program s g =
       ())
     else syntax_error s "program should end with end keyword")
   else syntax_error s "program should start with begin keyword"
+;;
+*)
+
+let program s g =
+  if match_token s State
+  then (
+    if match_token s Main
+    then (
+      let _ = main_state s g in
+    )
+    else syntax_error s "program cannot have a non-main named state"
+  )
+  else syntax_error s "program should start with a main state"
 ;;
 
 let parse stm g =

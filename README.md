@@ -1,43 +1,110 @@
+# Grammar
+
+`STATE`:
+```
+state main() {FIELDS}
+CONDITIONAL_EDGES |
+() {FIELDS}
+CONDITIONAL_EDGES
+```
+
+`CONDITIONAL_EDGES`:
+```
+=COND=> STATE
+CONDITIONAL_EDGES |
+-> TERM
+CONDITIONAL_EDGES
+```
+
+`COND`:
+```
+TERM |
+TERM = TERM |
+TERM > TERM |
+TERM >= TERM |
+TERM < TERM |
+TERM <= TERM |
+COND = COND |
+COND | COND |
+COND & COND |
+COND ^ COND
+```
+
+`PRIMITIVE`:
+```
+NAME | [number]
+```
+
+`FIELDS`:
+```
+FIELD | FIELD, FIELDS
+```
+
+`FIELD`:
+```
+int NAME: TERM
+```
+
+`TERM`:
+```
+PRIMITIVE
+```
+
 # Proposed Grammar
 
 `NODE`:
 ```
 TYPE NAME (ARGS) {FIELDS}
-	EDGES |
+EDGES |
 NAME
-	EDGES
-```
-
-`STATE`:
-```
-state NAME (ARGS) {FIELDS}
-	CONDITIONAL_EDGES |
-NAME
-	EDGES
+EDGES
 ```
 
 `EDGES`:
 ```
 => NODE
-	EDGES
+EDGES
+```
+
+`STATE`:
+```
+state NAME (ARGS) {FIELDS}
+CONDITIONAL_EDGES |
+(ARGS) {FIELDS}
+CONDITIONAL_EDGES |
+NAME
+CONDITIONAL_EDGES
 ```
 
 `CONDITIONAL_EDGES`:
 ```
-=COND=> NODE
-	CONDITIONAL_EDGES |
--> PRIMITIVE
+=COND=> STATE
+CONDITIONAL_EDGES |
+-> TERM
+```
+
+`COND`:
+```
+TERM |
+TERM = TERM |
+TERM > TERM |
+TERM >= TERM |
+TERM < TERM |
+TERM <= TERM |
+COND | COND |
+COND & COND |
+COND ^ COND
 ```
 
 `DEFINITION`:
 ```
 class NAME (ARG_DEFINITIONS) {FIELDS}
-	EDGES
+EDGES
 ```
 
 `ARGS`:
 ```
-NAME: PRIMITIVE | NAME: PRIMITIVE, ARGS
+NAME: TERM | NAME: TERM, ARGS
 ```
 
 `ARG_DEFINITIONS`:
@@ -57,12 +124,21 @@ node | NAME
 
 `FIELD`:
 ```
-TYPE NAME: PRIMITIVE
+TYPE NAME: TERM
+```
+
+`TERM`:
+```
+PRIMITIVE |
+TERM + TERM |
+TERM - TERM |
+TERM / TERM |
+TERM * TERM
 ```
 
 `PRIMITIVE`:
 ```
-NAME.NAME | [number]
+NAME | NAME.NAME | [number] | true | false
 ```
 
 # Building

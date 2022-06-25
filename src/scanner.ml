@@ -13,19 +13,25 @@ let is_alpha c =
 
 (* token *)
 type token =
-  | Begin
-  | End
-  | Identifier of string
-  | Read
-  | Write
-  | Literal of int
-  | Assign
-  | LeftParen
-  | RightParen
-  | AddOp
-  | SubOp
-  | Comma
-  | Semicolon
+    | State
+    | Main
+    | LeftParen
+    | RightParen
+    | LeftBrace
+    | RightBrace
+    | Equal
+    | RightArrow
+    | Dash
+    | Or
+    | And
+    | Xor
+    | Identifier of string
+    | Dot
+    | Comma
+    | Int
+    | Colon
+    | EndOfFile
+    | Literal of int
 
 type scanner =
   { mutable last_token : token option
@@ -58,14 +64,10 @@ let scan s =
     else (
       let _ = unread_char stm nc in
       let lc = String.lowercase acc in
-      if lc = "begin"
-      then Begin
-      else if lc = "end"
-      then End
-      else if lc = "read"
-      then Read
-      else if lc = "write"
-      then Write
+      if lc = "main"
+      then Main
+      else if lc = "state"
+      then State
       else Identifier acc)
   in
   let rec scan_lit acc =
@@ -80,20 +82,34 @@ let scan s =
   then scan_iden (Char.escaped c)
   else if is_digit c
   then scan_lit (Char.escaped c)
-  else if c = '+'
-  then AddOp
-  else if c = '-'
-  then SubOp
-  else if c = ','
-  then Comma
-  else if c = ';'
-  then Semicolon
   else if c = '('
   then LeftParen
   else if c = ')'
   then RightParen
-  else if c = ':' && read_char stm = '='
-  then Assign
+  else if c = '{'
+  then LeftBrace
+  else if c = '}'
+  then RightBrace
+  else if c = '='
+  then Equal
+  else if c = '>'
+  then RightArrow
+  else if c = '-'
+  then Dash
+  else if c = '|'
+  then Or
+  else if c = '&'
+  then And
+  else if c = '^'
+  then Xor
+  else if c = '.'
+  then Dot
+  else if c = ','
+  then Comma
+  else if c = ':'
+  then Colon
+  else if c = eof
+  then EndOfFile
   else syntax_error s "couldn't identify the token"
 ;;
 
