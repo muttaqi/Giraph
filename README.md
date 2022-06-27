@@ -24,6 +24,7 @@ TERM > TERM |
 TERM >= TERM |
 TERM < TERM |
 TERM <= TERM |
+TERM != TERM |
 COND = COND |
 COND | COND |
 COND & COND |
