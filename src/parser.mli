@@ -23,7 +23,6 @@ type token =
   | TRUE
   | FALSE
   | IDENT of (string)
-  | EOL
 
 val main :
   (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> string

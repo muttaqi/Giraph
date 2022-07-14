@@ -1,5 +1,8 @@
 %{
-    let variables = Hashtbl.create 1000
+    open List
+    open Float
+
+    let variables = Hashtbl.create 1000;;
 %}
 
 %token <int> INT
@@ -15,7 +18,6 @@
 %token MAIN
 %token TRUE FALSE
 %token <string> IDENT
-%token EOL
 %left PLUS MINUS        /* lowest precedence */
 %left TIMES DIV         /* medium precedence */
 %nonassoc UMINUS        /* highest precedence */
@@ -25,41 +27,56 @@
 %%
 
 main:
-    STATE MAIN LPAREN RPAREN LBRACE fields_and_edges   {
-        $6
+    STATE MAIN LPAREN fields RPAREN LBRACE conditional_edges RBRACE {
+        let _ = $4 in
+        $7
     }
-    | STATE MAIN LPAREN RPAREN LBRACE RBRACE EOL conditional_edges {
-        $8
-    }
-    | EOL { "" }
 ;
 
 state:
-    LPAREN RPAREN LBRACE fields_and_edges {
-        $4
+    LPAREN fields RPAREN LBRACE conditional_edges RBRACE {
+        let _ = $2 in
+        $5
     }
-    | LPAREN RPAREN LBRACE RBRACE EOL conditional_edges {
+;
+
+fields:
+    INTTYPE IDENT EQUAL expr COMMA fields {
+        let _ = Hashtbl.add variables $2 $4 in
         $6
+    }
+    | LESSER GREATER {
+        ""
     }
 ;
 
 conditional_edges:
-    EQUAL cond EQUAL GREATER state EOL conditional_edges   {
-            if $2
-            then 
+    EQUAL cond EQUAL GREATER state conditional_edges   {
+        if $2 then
             $5
-            else
-            $7
-        }
-    | MINUS GREATER expr    {
+        else
+            $6
+    }
+    | EQUAL cond EQUAL GREATER state {
+        if $2 then
+            $5
+        else
+            ""
+    }
+    | MINUS GREATER expr conditional_edges {
+        let to_return = $4 in
+        (Printf.sprintf "%d\n" $3) ^ to_return
+    }
+    | MINUS GREATER expr {
         Printf.sprintf "%d\n" $3
     }
-    | EOL { "" }
+    | ; { "done\n" }
 ;
 
 cond:
     TRUE                            { true }
     | FALSE                         { false }
+    | LPAREN cond RPAREN            { $2 }
     | expr EQUAL expr               { $1 = $3 }
     | expr GREATER expr             { $1 > $3 }
     | expr LESSER expr              { $1 < $3 }
@@ -68,17 +85,6 @@ cond:
     | expr EXCL EQUAL expr          { $1 <> $4 }
     | cond AND cond                 { $1 && $3 }
     | cond OR cond                  { $1 <> $3}
-;
-
-fields_and_edges:
-    INTTYPE IDENT COLON expr COMMA fields_and_edges {
-        let _ = Hashtbl.add variables $2 $4 in
-        $6
-    }
-    | INTTYPE IDENT COLON expr RBRACE EOL conditional_edges {
-        let _ = Hashtbl.add variables $2 $4 in
-        $7
-    }
 ;
 
 expr:

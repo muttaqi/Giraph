@@ -1,4 +1,3 @@
-(* File calc.ml *)
 let _ =
     try
     let lexbuf = Lexing.from_channel stdin in

@@ -1,56 +1,3 @@
-# Grammar
-
-`STATE`:
-```
-state main() {FIELDS}
-CONDITIONAL_EDGES |
-() {FIELDS}
-CONDITIONAL_EDGES
-```
-
-`CONDITIONAL_EDGES`:
-```
-=COND=> STATE
-CONDITIONAL_EDGES |
--> TERM
-CONDITIONAL_EDGES
-```
-
-`COND`:
-```
-TERM |
-TERM = TERM |
-TERM > TERM |
-TERM >= TERM |
-TERM < TERM |
-TERM <= TERM |
-TERM != TERM |
-COND = COND |
-COND | COND |
-COND & COND |
-COND ^ COND
-```
-
-`PRIMITIVE`:
-```
-NAME | [number]
-```
-
-`FIELDS`:
-```
-FIELD | FIELD, FIELDS
-```
-
-`FIELD`:
-```
-int NAME: TERM
-```
-
-`TERM`:
-```
-PRIMITIVE
-```
-
 # Proposed Grammar
 
 `NODE`:
@@ -142,8 +89,24 @@ TERM * TERM
 NAME | NAME.NAME | [number] | true | false
 ```
 
+# Current Grammar
+
+See src/definitions/parser.mly for the exact current grammar implementation.
+
 # Building
 
 ```
 ./scripts/build.sh
+```
+
+# Running
+
+Run an interactive shell:
+```
+./bin/igiraph
+```
+
+Run on a program:
+```
+./bin/giraph [file]
 ```
