@@ -25,4 +25,4 @@ type token =
   | IDENT of (string)
 
 val main :
-  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> string
+  (Lexing.lexbuf  -> token) -> Lexing.lexbuf -> unit -> string

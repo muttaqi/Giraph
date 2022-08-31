@@ -23,13 +23,14 @@
 %nonassoc UMINUS        /* highest precedence */
 
 %start main             /* the entry point */
-%type <string> main
+%type <unit -> string> main
 %%
 
 main:
     STATE MAIN LPAREN fields RPAREN LBRACE conditional_edges RBRACE {
-        let _ = $4 in
-        $7
+        fun () ->
+            let _ = $4 in
+            $7
     }
 ;
 
@@ -46,6 +47,22 @@ fields:
         $6
     }
     | LESSER GREATER {
+        ""
+    }
+    | LESSER input_fields GREATER {
+        $2
+    }
+;
+
+input_fields:
+    INTTYPE IDENT COMMA input_fields {
+        let var = read_int() in
+        let _ = Hashtbl.add variables $2 var in
+        $4
+    }
+    | INTTYPE IDENT {
+        let var = read_int() in
+        let _ = Hashtbl.add variables $2 var in
         ""
     }
 ;
@@ -70,7 +87,7 @@ conditional_edges:
     | MINUS GREATER expr {
         Printf.sprintf "%d\n" $3
     }
-    | ; { "done\n" }
+    | ; { "\n" }
 ;
 
 cond:
